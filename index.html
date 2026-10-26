@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Moonpie - Care & Love Companion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #fce7f3 50%, #fff1f2 100%);
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --card-border: rgba(255, 255, 255, 0.9);
+            --primary-pink: #f43f5e;
+            --soft-pink: #ffe4e6;
+            --accent-blue: #0284c7;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --shadow-soft: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: var(--text-dark);
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            padding: 15px 30px;
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 25px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-area h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.2rem;
+            color: var(--primary-pink);
+        }
+
+        .header-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-pink);
+            object-fit: cover;
+        }
+
+        /* Hero / Companion Section */
+        .hero-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 25px;
+            padding: 25px;
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            position: relative;
+        }
+
+        .hero-avatar-wrapper {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .main-avatar {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #fff;
+            box-shadow: 0 8px 20px rgba(244, 63, 94, 0.25);
+            transition: transform 0.3s ease;
+        }
+
+        .main-avatar:hover {
+            transform: scale(1.05) rotate(3deg);
+        }
+
+        .speech-bubble {
+            background: #fff;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.05);
+            flex-grow: 1;
+            position: relative;
+        }
+
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: 8px 12px 8px 0;
+            border-style: solid;
+            border-color: transparent #fff transparent transparent;
+        }
+
+        .speech-bubble h3 {
+            color: var(--primary-pink);
+            margin-bottom: 5px;
+            font-size: 1.2rem;
+        }
+
+        .speech-bubble p {
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Floating Flying Character */
+        #floating-character {
+            position: fixed;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 3px solid var(--primary-pink);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            z-index: 999;
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: none;
+            display: none;
+        }
+
+        /* Main Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            .hero-section { flex-direction: column; text-align: center; }
+            .speech-bubble::before { display: none; }
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 22px;
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-soft);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-icon {
+            font-size: 1.4rem;
+        }
+
+        /* Tracker Elements */
+        .glasses-container {
+            display: flex;
+            gap: 8px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .glass, .coffee-cup {
+            width: 36px;
+            height: 44px;
+            border: 2px solid var(--accent-blue);
+            border-radius: 0 0 10px 10px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            background: #fff;
+            transition: transform 0.2s;
+        }
+
+        .glass.filled::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            top: 20%;
+            background: var(--accent-blue);
+        }
+
+        .coffee-cup {
+            border-color: #78350f;
+            border-radius: 6px 6px 12px 12px;
+        }
+
+        .coffee-cup.filled::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            top: 25%;
+            background: #78350f;
+        }
+
+        .progress-bar-bg {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent-blue);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Weather Buttons */
+        .weather-options {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .weather-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .weather-btn:hover {
+            background: var(--primary-pink);
+            color: #fff;
+        }
+
+        /* Kisses Button */
+        .kiss-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            background: var(--primary-pink);
+            color: #fff;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
+            transition: transform 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .kiss-btn:hover {
+            transform: scale(1.02);
+            background: #e11d48;
+        }
+
+        .romantic-quote {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating Avatar that moves to clicked cards -->
+    <img id="floating-character" src="Gemini_Generated_Image_ogc47mogc47mogc4.jpg" alt="Moving Character">
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo-area">
+                <span style="font-size: 1.8rem;">🌙</span>
+                <h1>My Moonpie</h1>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 0.9rem; color: var(--text-muted);">Always With You</span>
+                <img class="header-avatar" src="Gemini_Generated_Image_ogc47mogc47mogc4.jpg" alt="Avatar">
+            </div>
+        </header>
+
+        <!-- Character Hero Section -->
+        <div class="hero-section" id="hero-card">
+            <div class="hero-avatar-wrapper">
+                <img class="main-avatar" src="Gemini_Generated_Image_ogc47mogc47mogc4.jpg" alt="My Character">
+            </div>
+            <div class="speech-bubble">
+                <h3 id="bubble-title">Hello, my moonpie! 💖</h3>
+                <p id="bubble-text">I'm here to take care of you today! Don't forget to drink your water, keep an eye on your coffee, and rest well tonight. I love you so much! 💋</p>
+            </div>
+        </div>
+
+        <!-- Main Content Cards Grid -->
+        <div class="grid">
+
+            <!-- Water Tracker -->
+            <div class="card" onclick="moveCharacterToCard(this, 'Hydration Reminder 💧', 'Every sip reminds me of how much I care about you. Stay hydrated, my sweet boy!')">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon">💧</span>
+                        <span>Water Tracker</span>
+                    </div>
+                    <span id="water-count" style="font-size: 0.85rem; font-weight: 600; color: var(--accent-blue);">0/8 Cups</span>
+                </div>
+                <p class="romantic-quote">"Drink up, my love! Keeping you healthy is my #1 job."</p>
+                <div class="glasses-container" id="water-glasses">
+                    <div class="glass" onclick="toggleGlass(event, 0)"></div>
+                    <div class="glass" onclick="toggleGlass(event, 1)"></div>
+                    <div class="glass" onclick="toggleGlass(event, 2)"></div>
+                    <div class="glass" onclick="toggleGlass(event, 3)"></div>
+                    <div class="glass" onclick="toggleGlass(event, 4)"></div>
+                    <div class="glass" onclick="toggleGlass(event, 5)"></div>
+                    <div class="glass" onclick="toggleGlass(event, 6)"></div>
+                    <div class="glass" onclick="toggleGlass(event, 7)"></div>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="water-progress"></div>
+                </div>
+            </div>
+
+            <!-- Coffee Tracker -->
+            <div class="card" onclick="moveCharacterToCard(this, 'Coffee Check ☕', 'Fueling your day is good, but remember your warm heart is my favorite source of energy!')">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon">☕</span>
+                        <span>Coffee Tracker</span>
+                    </div>
+                    <span id="coffee-count" style="font-size: 0.85rem; font-weight: 600; color: #78350f;">0 Cups</span>
+                </div>
+                <p class="romantic-quote">"Enjoy your coffee, but don't drink too much late at night!"</p>
+                <div class="glasses-container" id="coffee-cups">
+                    <div class="coffee-cup" onclick="toggleCoffee(event, 0)"></div>
+                    <div class="coffee-cup" onclick="toggleCoffee(event, 1)"></div>
+                    <div class="coffee-cup" onclick="toggleCoffee(event, 2)"></div>
+                </div>
+            </div>
+
+            <!-- Sleep Tracker -->
+            <div class="card" onclick="moveCharacterToCard(this, 'Sleep & Rest 🌙', 'Sweet dreams, my sweet boy. Sleep tight and let me hold your heart tonight!')">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon">😴</span>
+                        <span>Sleep Tracker</span>
+                    </div>
+                    <span id="sleep-value" style="font-size: 0.85rem; font-weight: 600; color: var(--primary-pink);">8 Hours</span>
+                </div>
+                <p class="romantic-quote">"Rest well, my moonpie. I'll be in your dreams!"</p>
+                <input type="range" min="1" max="12" value="8" style="width: 100%; margin: 15px 0; accent-color: var(--primary-pink);" oninput="updateSleep(this.value)">
+            </div>
+
+            <!-- Weather Companion -->
+            <div class="card" onclick="moveCharacterToCard(this, 'Weather Outfit Advice 🌤️', 'Rain or shine, my warm hugs will always keep you safe and cozy!')">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon">🌤️</span>
+                        <span>Weather & Outfit Advice</span>
+                    </div>
+                </div>
+                <p class="romantic-quote">Select today's weather to see my cozy tip for you:</p>
+                <div class="weather-options">
+                    <button class="weather-btn" onclick="setWeather(event, 'Sunny ☀️', 'It is bright outside! Wear something cool and don’t forget sunglasses, cutie!')">Sunny</button>
+                    <button class="weather-btn" onclick="setWeather(event, 'Rainy 🌧️', 'It is raining! Grab an umbrella and wear a warm jacket, my love!')">Rainy</button>
+                    <button class="weather-btn" onclick="setWeather(event, 'Chilly ❄️', 'It is cold outside! Bundle up in a warm sweater—or let me warm you up!')">Chilly</button>
+                </div>
+            </div>
+
+            <!-- Romantic Kisses & Love Reminders -->
+            <div class="card" style="grid-column: 1 / -1;" onclick="moveCharacterToCard(this, 'Lots of Kisses! 💋', 'Sending you a million kisses right now! You are my world and my moonpie!')">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon">💋</span>
+                        <span>Send Kisses & Love Notes</span>
+                    </div>
+                </div>
+                <p class="romantic-quote" style="margin-bottom: 15px;">"Click below to receive sweet kisses from me anytime you miss me!"</p>
+                <button class="kiss-btn" onclick="sendKisses(event)">
+                    <span>Send Flying Kisses & Love 💋❤️</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let waterFilled = 0;
+        let coffeeFilled = 0;
+
+        function updateSpeech(title, text) {
+            document.getElementById('bubble-title').innerText = title;
+            document.getElementById('bubble-text').innerText = text;
+        }
+
+        function moveCharacterToCard(cardElement, title, text) {
+            updateSpeech(title, text);
+
+            const floater = document.getElementById('floating-character');
+            const rect = cardElement.getBoundingClientRect();
+
+            floater.style.display = 'block';
+            floater.style.top = (rect.top + window.scrollY - 30) + 'px';
+            floater.style.left = (rect.right - 60) + 'px';
+
+            setTimeout(() => {
+                floater.style.transform = 'scale(1.1) rotate(5deg)';
+                setTimeout(() => floater.style.transform = 'scale(1) rotate(0deg)', 300);
+            }, 100);
+        }
+
+        function toggleGlass(e, index) {
+            e.stopPropagation();
+            const glasses = document.querySelectorAll('#water-glasses .glass');
+            if (glasses[index].classList.contains('filled')) {
+                for (let i = index; i < glasses.length; i++) glasses[i].classList.remove('filled');
+            } else {
+                for (let i = 0; i <= index; i++) glasses[i].classList.add('filled');
+            }
+            const count = document.querySelectorAll('#water-glasses .glass.filled').length;
+            document.getElementById('water-count').innerText = `${count}/8 Cups`;
+            document.getElementById('water-progress').style.width = `${(count / 8) * 100}%`;
+            updateSpeech('Hydration Progress 💧', `Great job drinking water, my love! You've had ${count} cups today. I'm so proud of you!`);
+        }
+
+        function toggleCoffee(e, index) {
+            e.stopPropagation();
+            const cups = document.querySelectorAll('#coffee-cups .coffee-cup');
+            if (cups[index].classList.contains('filled')) {
+                for (let i = index; i < cups.length; i++) cups[i].classList.remove('filled');
+            } else {
+                for (let i = 0; i <= index; i++) cups[i].classList.add('filled');
+            }
+            const count = document.querySelectorAll('#coffee-cups .coffee-cup.filled').length;
+            document.getElementById('coffee-count').innerText = `${count} Cups`;
+            updateSpeech('Coffee Tracker ☕', count > 2 ? "That's quite a bit of coffee today! Make sure to balance it with water, my love ❤️" : `Enjoy your cup of coffee! You've had ${count} so far.`);
+        }
+
+        function updateSleep(val) {
+            document.getElementById('sleep-value').innerText = `${val} Hours`;
+            updateSpeech('Sleep Monitor 🌙', `You logged ${val} hours of sleep. ${val < 7 ? 'Make sure to take a rest later, sweetie!' : 'That sounds like a great rest! Ready for the day!'}`);
+        }
+
+        function setWeather(e, weatherType, advice) {
+            e.stopPropagation();
+            updateSpeech(`Weather: ${weatherType}`, advice);
+        }
+
+        function sendKisses(e) {
+            e.stopPropagation();
+            confetti({
+                particleCount: 50,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#f43f5e', '#f472b6', '#ffe4e6']
+            });
+            updateSpeech('Sending Love & Kisses 💋', 'Mwah! A big warm kiss just for you! Always remember how much I love you, my moonpie!');
+        }
+    </script>
+</body>
+</html>
